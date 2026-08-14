@@ -1,105 +1,160 @@
-# PII Redaction Tool - Scaler AI Labs Assignment
+<div align="center">
 
-**Author:** Sudhir Singh  
-**Role:** Environment Data - Scaler AI Labs  
-**Submission Date:** August 14, 2026  
+<img src="https://img.icons8.com/isometric-headers/100/security-shield.png" width="80"/>
+
+# 🛡️ Scaler AI PII Redaction Tool
+
+### Enterprise-grade Automated PII Detection, Redaction & Residual Audit Engine
+
+[![Live App](https://img.shields.io/badge/🚀%20Live%20Demo-piiredaction.streamlit.app-6366f1?style=for-the-badge&logo=streamlit&logoColor=white)](https://piiredaction.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![spaCy](https://img.shields.io/badge/spaCy-en__core__web__sm-09A3D5?style=for-the-badge&logo=spacy&logoColor=white)](https://spacy.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
+
+**Author:** Sudhir Singh &nbsp;|&nbsp; **Role:** Environment Data — Scaler AI Labs &nbsp;|&nbsp; **Date:** August 14, 2026
 
 ---
 
-## 📌 Problem Statement & Overview
-This repository contains a production-grade, modular **PII Redaction Tool** written in Python designed to detect and redact personally identifiable information (PII) from confidential documents such as Red Herring Prospectuses (`.docx`) and transaction logs.
+> 🔗 **[https://piiredaction.streamlit.app/](https://piiredaction.streamlit.app/)** — Try the live deployed application
 
-The pipeline replaces all detected PII instances with realistic, format-preserving synthetic alternatives using `Faker`, maintaining deterministic entity mapping consistency across all paragraphs, tables, headers, and footers (e.g. `Prakash Boricha` ➔ `John Doe`, `rashhi.patil@gmail.com` ➔ `john.doe@example.com`, and `+91 9876543210` ➔ `+91 1234567645`).
+</div>
 
 ---
 
-## 🏗️ System Architecture & Hybrid Detection Engine
+## 📌 Problem Statement
 
-The system implements a **Hybrid Detection Architecture** combining three complimentary layers:
+Financial and legal documents like **Red Herring Prospectuses** contain highly sensitive personally identifiable information (PII) — including names, emails, phone numbers, corporate registration numbers, and addresses. Manually redacting such documents is error-prone, time-consuming, and non-reproducible.
+
+The **Scaler AI PII Redaction Tool** is a production-grade, fully automated pipeline that:
+- **Detects** 11 categories of PII using a hybrid multi-layer NLP engine
+- **Replaces** all PII with semantically coherent, format-preserving synthetic alternatives
+- **Validates** zero data leakage through a two-layer post-redaction residual audit
+- **Preserves** complete document structure — fonts, tables, headers, footers, bold/italic formatting
+
+---
+
+## 🌐 Live Application
+
+> ### 🚀 [https://piiredaction.streamlit.app/](https://piiredaction.streamlit.app/)
+
+The Streamlit web app provides an interactive dashboard to:
+- ✅ Upload any `.docx` document for PII redaction
+- ✅ Select which PII categories to detect and redact
+- ✅ Run dry-run analysis (detect-only, no modification)
+- ✅ Download the sanitized redacted `.docx` file
+- ✅ View live audit results, metric cards, and entity replacement mapping
+- ✅ Explore per-paragraph and per-table redaction snippets
+
+---
+
+## 📊 Performance Metrics at a Glance
+
+| Metric | Score | Description |
+|:---|:---:|:---|
+| **Precision** | **83.87%** | Fraction of flagged spans that are genuine PII |
+| **Recall** | **92.86%** | Fraction of real PII correctly detected |
+| **F1-Score** | **88.14%** | Harmonic mean of Precision & Recall |
+| **Accuracy** | **82.05%** | Overall correct classification rate |
+| **Original PII Leaks** | **0** | Zero real PII values in redacted output |
+| **Known-Source Regression** | **✅ PASS** | All 25 target PII values verified absent |
+
+> Full evaluation details: [`EVALUATION.md`](./EVALUATION.md) | Audit report: [`evaluation/evaluation_report.md`](./evaluation/evaluation_report.md)
+
+---
+
+## 🏗️ System Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                      Hybrid PII Detection Engine                       │
-├───────────────────┬────────────────────────────┬───────────────────────┤
-│ Regex Recognizers │ spaCy Named Entity (NER)   │ Contextual Rules      │
-│ (Luhn / ipaddress)│ (High Recall for Names/Org)│ (DOB & Role-Name Guard)│
-└─────────┬─────────┴─────────────┬──────────────┴───────────┬───────────┘
-          │                       │                          │
-          └───────────────────────┼──────────────────────────┘
-                                  ▼
-                   ┌─────────────────────────────┐
-                   │ Normalization & Conflict    │
-                   │ Resolution Engine           │
-                   └──────────────┬──────────────┘
-                                  ▼
-                   ┌─────────────────────────────┐
-                   │ Deterministic Hash Mapping  │
-                   │ (Entity Consistency Engine) │
-                   └──────────────┬──────────────┘
-                                  ▼
-                   ┌─────────────────────────────┐
-                   │ DOCX Run-Level Reconstructor│
-                   │ (Preserves Style & Formats) │
-                   └──────────────┬──────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                    SCALER AI PII REDACTION PIPELINE                        │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│  📄 INPUT: Red Herring Prospectus.docx                                     │
+│     (1,006 paragraphs | 76 tables | 3,180 cells | 3 header/footer sects)  │
+│                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                HYBRID PII DETECTION ENGINE                          │  │
+│  │                                                                     │  │
+│  │  ┌─────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │  │
+│  │  │  Layer 1: RegEx  │  │ Layer 2: spaCy   │  │ Layer 3: Context │  │  │
+│  │  │  + Luhn + ipadr  │  │ en_core_web_sm   │  │ Prefix Triggers  │  │  │
+│  │  │                  │  │ (NER)            │  │                  │  │  │
+│  │  │ EMAIL            │  │ PERSON           │  │ DATE_OF_BIRTH    │  │  │
+│  │  │ PHONE_NUMBER     │  │ ORGANIZATION     │  │ ADDRESS          │  │  │
+│  │  │ CREDIT_CARD      │  │                  │  │ Role Names       │  │  │
+│  │  │ SSN / PAN / CIN  │  │                  │  │                  │  │  │
+│  │  │ IP_ADDRESS       │  │                  │  │                  │  │  │
+│  │  └─────────────────┘  └──────────────────┘  └──────────────────┘  │  │
+│  └──────────────────────────────────┬──────────────────────────────────┘  │
+│                                     ▼                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │           NORMALIZATION & CONFLICT RESOLUTION ENGINE                │  │
+│  │           (span deduplication, priority resolution)                 │  │
+│  └──────────────────────────────────┬──────────────────────────────────┘  │
+│                                     ▼                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │         SYNTHETIC REPLACEMENT ENGINE  (Faker + MD5 Seed)            │  │
+│  │         Deterministic: same entity → same replacement everywhere    │  │
+│  └──────────────────────────────────┬──────────────────────────────────┘  │
+│                                     ▼                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │        DOCX RUN-LEVEL RECONSTRUCTOR (DocxProcessor)                 │  │
+│  │        Preserves bold, italic, font size, color, table structure    │  │
+│  └──────────────────────────────────┬──────────────────────────────────┘  │
+│                                     ▼                                      │
+│  📄 OUTPUT: Red_Herring_Prospectus_Redacted.docx                           │
+│                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                2-LAYER POST-REDACTION AUDIT ENGINE                  │  │
+│  │                                                                     │  │
+│  │  Layer 1: Known-Source Regression Check (25 target PII values)      │  │
+│  │  Layer 2: Whole-Entity Normalized Residual Audit (1,912 spans)       │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Why Hybrid Detection?
-- **Regex Recognizers**: High-confidence deterministic matching for structured patterns (**Emails**, **Phone Numbers** including adjacent & landline formats, **IP Addresses** validated with Python `ipaddress`, **Credit Cards** validated with **Luhn Checksum Algorithm**, **SSNs**, **PANs**, **CINs**).
-- **spaCy NER**: Broad coverage for statistical natural language entities (**Full Names**, **Organizations**).
-- **Contextual Rules**: Role-based name recognition (**Contact Person**, **Managing Director**, **Company Secretary**, **Auditor**) and precision guards for ambiguous entities (**Dates of Birth** vs. prospectus dates, **Indian Addresses**).
+---
+
+## 🔍 Supported PII Categories
+
+| # | Category | Detection Method | Example (Original → Synthetic) |
+|:---:|:---|:---|:---|
+| 1 | `PERSON` | spaCy NER + Known Name Patterns | `Prakash Boricha` → `James Carter` |
+| 2 | `ORGANIZATION` | spaCy NER + Corporate Suffix Regex | `KSH International Ltd` → `Nexion Solutions LLC` |
+| 3 | `EMAIL` | RegEx (RFC 5321) | `cs.connect@kshinternational.com` → `jane.doe@example.com` |
+| 4 | `PHONE_NUMBER` | Multi-pattern RegEx (India + Intl.) | `+91 22 30752929` → `+91 98765 43210` |
+| 5 | `ADDRESS` | Context-trigger prefix rules | `Plot No. 7, Pune` → `42 Oak Street, Mumbai` |
+| 6 | `DATE_OF_BIRTH` | Strict birth-prefix context trigger only | `12/08/1985` → `07/03/1990` |
+| 7 | `SSN` | RegEx (`XXX-XX-XXXX`) | `123-45-6789` → `987-65-4321` |
+| 8 | `CREDIT_CARD` | RegEx + **Luhn Algorithm Checksum** | `4532 1234 5678 9010` → `5412 7534 5678 9012` |
+| 9 | `IP_ADDRESS` | Python `ipaddress` module validation | `192.168.1.100` → `10.20.30.40` |
+| 10 | `PAN` | India-specific RegEx `[A-Z]{5}[0-9]{4}[A-Z]` | `ABCDE1234F` → `PQRST5678G` |
+| 11 | `CIN` | India-specific 21-char alphanumeric pattern | `U28129PN1979PLC141032` → `L17110MH2005PLC123456` |
 
 ---
 
-## 📋 Supported PII Categories & Detection Strategy
+## 🛡️ Two-Layer Post-Redaction Validation
 
-| PII Category | Detection Method | Precision Guard / Validation Strategy | Synthetic Replacement Example |
-| :--- | :--- | :--- | :--- |
-| **Full Names (`PERSON`)** | spaCy NER + Role Pattern | Contextual trigger prefixes (`Contact Person:`, `Company Secretary:`, `Director:`) | `Prakash Boricha` ➔ `John Doe` |
-| **Email Addresses (`EMAIL`)** | RegEx | Standard RFC email regex | `rashhi.patil@gmail.com` ➔ `john.doe@example.com` |
-| **Phone Numbers (`PHONE_NUMBER`)** | RegEx | Independent matching for adjacent numbers (`+91 22 30752929`, `+91 81081 14949`) | `+91 9876543210` ➔ `+91 1234567645` |
-| **Company Names (`ORGANIZATION`)** | spaCy NER + RegEx Suffixes | Validates corporate suffixes (`Limited`, `Pvt Ltd`, `LLP`, `Inc.`) | `KSH International Ltd` ➔ `Acme Corp Ltd` |
-| **Addresses (`ADDRESS`)** | Contextual RegEx | Triggers on street/plot/wing/building indicators & Indian PIN codes | `Gat No. 11/3, Village Birdewadi, Pune` ➔ `45 Park Ave, NY 10001` |
-| **SSNs (`SSN`)** | RegEx | Standard `###-##-####` format | `123-45-6789` ➔ `987-65-4321` |
-| **Credit Cards (`CREDIT_CARD`)** | RegEx + Algorithmic | Validates digit length (13-19 digits) and **Luhn Checksum (`luhn_check`)** | `4012-8888-8888-1881` ➔ `4111-2222-3333-4444` |
-| **Dates of Birth (`DATE_OF_BIRTH`)** | Contextual RegEx | Triggers **ONLY** on explicit keywords (`Date of Birth:`, `DOB:`, `Born on:`) | `January 15, 1980` ➔ `March 22, 1988` |
-| **IP Addresses (`IP_ADDRESS`)** | RegEx + Algorithmic | Validates candidate string with Python `ipaddress.ip_address` | `192.168.1.100` ➔ `10.0.4.15` |
-| *Domain Extension: PAN/CIN* | RegEx | Indian Income Tax & Corporate Registration IDs | `U28129PN1979PLC141032` ➔ `U12345MH2024PLC654321` |
+### Layer 1 — Known-Source PII Regression Check
+Verifies that **25 specifically identified** original PII strings are **100% absent** from the output document:
 
----
+- ✅ **15 Named Persons** (Sarthak Malvadkar, Prakash Boricha, Hitesh Ramani, ...)
+- ✅ **2 Organizations** (KSH International Limited, KSH International)
+- ✅ **2 Emails** (cs.connect@kshinternational.com, ...)
+- ✅ **5 Phone Numbers** (+91 22 30752929, +91 22 30752928, ...)
+- ✅ **1 CIN** (U28129PN1979PLC141032)
 
-## 🎨 DOCX Run Preservation & Cross-Run Entity Handling
+**Result: ✅ PASS — 0/25 original values found in redacted output**
 
-To ensure document fidelity, `DocxProcessor` operates at the **run level** across body paragraphs, tables, headers, and footers:
+### Layer 2 — Whole-Entity Normalized Residual Audit
+Re-scans the redacted document with the full detection pipeline and classifies every span:
 
-1. **Concatenated Span Analysis**: The text of all runs in a paragraph is concatenated to form a complete string for entity detection.
-2. **Cross-Run Offset Mapping**: Detected entity spans spanning across multiple runs (e.g. `Run 1: "Rajesh "`, `Run 2: "Kushal "`, `Run 3: "Hegde"`) are mapped back to their respective character offsets.
-3. **Format Retention**: Synthetic replacements are assigned into the primary affected run while retaining all font styles (**bold**, *italic*, font name, font size, color). Unaffected runs are preserved intact.
-
----
-
-## 🔁 Synthetic Replacement & Entity Consistency
-
-- **Deterministic Hash Seed**: MD5 hashing generates a stable integer seed per unique text entity (`hashlib.md5(text.lower()).hexdigest()`).
-- **Global Mapping Cache**: Every occurrence of `Prakash Boricha` receives the exact same synthetic replacement throughout all paragraphs and tables in the document.
-
----
-
-## 🛡️ Two-Layer Post-Redaction Validation Architecture
-
-The tool performs two distinct post-redaction validation checks in `src/evaluation.py`:
-
-1. **Known-Source PII Regression Check**:
-   Confirms that specifically identified sensitive original PII strings from the input document (e.g., `Sarthak Malvadkar`, `Prakash Boricha`, `cs.connect@kshinternational.com`, `+91 22 30752929`, `U28129PN1979PLC141032`) are **100% absent** from the output document (**PASS**).
-
-2. **Detector-Based Residual Audit**:
-   Re-runs the `PIIDetectorPipeline` across all body paragraphs, tables, headers, and footers of the generated document to audit all detected PII-shaped text.
-   - **Methodological Distinction**: The redacted document intentionally contains format-preserving synthetic replacements generated by `Faker` (e.g., `Heather Baker`, `Acme Corp LLC`, `+91 1234567645`).
-   - The residual audit uses whole-value normalized matching to categorize every output detection into:
-     - **Original PII Leaks**: **0** (Spans matching original document PII inventory)
-     - **Synthetic Replacements**: **933** (Expected format-preserving Faker replacements)
-     - **New / Unmatched PII-Like Values**: **979** (PII-shaped spans on redacted text not in original inventory and not in replacement cache)
-
-> **Validation Statement**: No original source PII values remained in the output document, and a post-redaction detector audit was performed across all paragraphs, tables, headers, and footers to inspect and categorize residual PII-like content.
+| Classification | Count | Status |
+|:---|:---:|:---:|
+| `ORIGINAL_PII_LEAK` | **0** | ✅ PASS |
+| `SYNTHETIC_REPLACEMENT` | 932 | ✅ Expected |
+| `NEW_OR_UNMATCHED_PII_LIKE` | 980 | ⚠️ Review |
 
 ---
 
@@ -107,80 +162,125 @@ The tool performs two distinct post-redaction validation checks in `src/evaluati
 
 ```
 Scaler/
-├── .gitignore               # Excludes __pycache__/ and *.pyc
-├── README.md                # Technical documentation
-├── requirements.txt         # Package dependencies
-├── pii_redactor.py          # Root CLI entry point wrapper
-├── src/
-│   ├── pii_redactor.py      # Main CLI & orchestrator
-│   ├── detectors.py         # Hybrid detection engine (Luhn, ipaddress, role names)
-│   ├── replacement.py       # Deterministic Faker synthetic generator
-│   ├── docx_processor.py    # Run-level DOCX traverser (Paragraphs, Tables, Headers, Footers)
-│   └── evaluation.py       # Authoritative benchmark evaluator & two-layer residual auditor
-├── input/
-│   └── Red Herring Prospectus.docx
-├── output/
-│   └── Red_Herring_Prospectus_Redacted.docx
-└── evaluation/
-    ├── test_cases.json      # Controlled benchmark dataset
-    └── evaluation_report.md # Dynamically generated evaluation & audit report
+├── 📄 app.py                        # Streamlit web application (main entry point)
+├── 📄 pii_redactor.py               # CLI entry point wrapper
+├── 📄 requirements.txt              # Python package dependencies
+├── 📄 runtime.txt                   # Streamlit Cloud Python version pin (3.11)
+├── 📄 EVALUATION.md                 # Full evaluation strategy & metrics spec
+├── 📄 README.md                     # This file
+│
+├── 📁 src/
+│   ├── detectors.py                 # Hybrid detection engine (RegEx + spaCy NER + Context)
+│   ├── replacement.py               # Deterministic Faker synthetic replacement generator
+│   ├── docx_processor.py            # Run-level DOCX traverser & redactor
+│   └── evaluation.py               # Benchmark evaluator & 2-layer residual auditor
+│
+├── 📁 input/
+│   └── Red Herring Prospectus.docx  # Source document (1,006 paragraphs, 76 tables)
+│
+├── 📁 output/
+│   └── Red_Herring_Prospectus_Redacted.docx  # ✅ Final sanitized output
+│
+└── 📁 evaluation/
+    ├── test_cases.json              # Ground-truth benchmark dataset (33 test cases)
+    └── evaluation_report.md         # Auto-generated evaluation & audit report
 ```
 
 ---
 
-## ⚡ How to Run
+## ⚡ Quick Start
 
-### Installation & Environment Setup
+### Prerequisites
 
-Step 1: Install Python dependencies:
 ```bash
+# Python 3.11+ recommended
 pip install -r requirements.txt
 ```
 
-Step 2: Download the required spaCy English model:
-```bash
-python -m spacy download en_core_web_sm
-```
+Dependencies: `python-docx`, `spacy`, `faker`, `streamlit`, `en_core_web_sm`
 
-### 🌐 Launch Interactive Streamlit Web Application
-To run the interactive Streamlit Web Studio UI:
+### 🌐 Launch Web App (Streamlit)
+
 ```bash
 streamlit run app.py
 ```
-This opens the PII Redaction Studio in your browser (`http://localhost:8501`), enabling custom `.docx` file uploads, category-level redaction filters, interactive Faker seed controls, live paragraph/table snippet comparisons, synthetic replacement mapping search, and direct `.docx` download.
+Opens at `http://localhost:8501`
 
----
+### 🖥️ CLI — Redact Document
 
-### 1. Perform CLI Dry-Run Analysis
 ```bash
+# Full redaction
+python pii_redactor.py --input "input/Red Herring Prospectus.docx" --output "output/Red_Herring_Prospectus_Redacted.docx"
+
+# Dry-run (detect only, no modification)
 python pii_redactor.py --input "input/Red Herring Prospectus.docx" --dry-run
 ```
 
-### 2. Generate Redacted DOCX Document
-```bash
-python pii_redactor.py --input "input/Red Herring Prospectus.docx" --output "output/Red_Herring_Prospectus_Redacted.docx"
-```
+### 📊 Run Benchmark Evaluation & Audit
 
-### 3. Run Authoritative Benchmark Evaluation & Two-Layer Residual Audit
 ```bash
 python src/evaluation.py
 ```
 
+Outputs:
+- Overall Precision / Recall / F1 / Accuracy
+- Per-category TP/FP/FN breakdown
+- Layer 1 known-source regression results
+- Layer 2 residual audit classification counts
+
 ---
 
-## 📊 Summary of Evaluation & Validation Metrics
+## 🎨 Key Technical Highlights
 
-### 📈 1. Controlled Benchmark Metrics
-- **Precision**: **83.87%**
-- **Recall**: **92.86%**
-- **F1-Score**: **88.14%**
-- **Accuracy**: **82.05%**
+| Feature | Implementation |
+|:---|:---|
+| **Cross-run entity detection** | Concatenates all runs in a paragraph, maps spans back to individual run offsets |
+| **Format preservation** | Bold, italic, font name/size/color preserved at run level during replacement |
+| **Deterministic replacements** | MD5 hash of original entity text seeds Faker for consistent cross-document mapping |
+| **spaCy optimization** | `parser`, `lemmatizer`, `attribute_ruler` disabled → 2–3× faster NER inference |
+| **Single-pass inventory** | Original PII inventory collected during redaction pass — eliminates redundant 2nd document scan |
+| **Luhn validation** | Credit card number validation using Luhn checksum algorithm — prevents false positives |
+| **IPv4 validation** | Python `ipaddress.ip_address()` validates octets — prevents numeric ID false positives |
+| **DOB context guard** | `DATE_OF_BIRTH` triggers ONLY on explicit prefix keywords — prevents redacting prospectus event dates |
 
-### 🔍 2. Real Document Validation & Audit
-- **Known-Source Regression Check**: **PASS (0 Original Target PII Remaining)**
-- **Original PII Leaks**: **0** (100% Sanitized)
-- **Synthetic Replacements**: **1,912** (Format-preserving synthetic Faker values)
-- **New / Unmatched PII-Like Values**: **0**
-- **Final Audit Status**: **PASS (0 Original Real PII & 0 Unmatched Leaks)**
+---
 
-Detailed per-entity breakdowns, known-source regression results, detector-based audit details, and traversal comparisons are documented in [`evaluation/evaluation_report.md`](file:///d:/Downloads/Scaler/evaluation/evaluation_report.md).
+## 📈 Evaluation Strategy
+
+Two-strategy evaluation framework — full details in [`EVALUATION.md`](./EVALUATION.md):
+
+1. **Controlled Ground-Truth Benchmark** — 33 test cases in `evaluation/test_cases.json` covering all 11 PII categories with positive examples and negative counter-examples.
+
+2. **Real-Document Post-Redaction Residual Audit** — Full pipeline re-scan of the output DOCX to verify zero original PII leakage using exact normalized tuple-key matching.
+
+---
+
+## 📄 Documents & Reports
+
+| Document | Description |
+|:---|:---|
+| [`EVALUATION.md`](./EVALUATION.md) | Full evaluation strategy, metric formulas, per-category tables, architecture layers, limitations |
+| [`evaluation/evaluation_report.md`](./evaluation/evaluation_report.md) | Auto-generated benchmark results, audit tables, confusion matrix, tradeoff analysis |
+| [`output/Red_Herring_Prospectus_Redacted.docx`](./output/Red_Herring_Prospectus_Redacted.docx) | ✅ Final sanitized output document |
+| [`evaluation/test_cases.json`](./evaluation/test_cases.json) | Ground-truth benchmark dataset (33 test cases) |
+
+---
+
+## 🔗 Links
+
+| | |
+|:---|:---|
+| 🌐 **Live App** | [https://piiredaction.streamlit.app/](https://piiredaction.streamlit.app/) |
+| 📦 **Repository** | [https://github.com/SudhirSir/PII-Redaction-Tool](https://github.com/SudhirSir/PII-Redaction-Tool) |
+| 📊 **Evaluation Doc** | [`EVALUATION.md`](./EVALUATION.md) |
+| 📋 **Audit Report** | [`evaluation/evaluation_report.md`](./evaluation/evaluation_report.md) |
+
+---
+
+<div align="center">
+
+**Built with ❤️ by Sudhir Singh — Scaler AI Labs**
+
+[![Live App](https://img.shields.io/badge/🚀%20Try%20Live%20App-piiredaction.streamlit.app-6366f1?style=for-the-badge)](https://piiredaction.streamlit.app/)
+
+</div>
