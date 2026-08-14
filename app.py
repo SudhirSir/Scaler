@@ -348,30 +348,27 @@ if btn_redact:
     if not input_path or not os.path.exists(input_path):
         st.error("Please provide a valid DOCX document before executing.")
     else:
-        progress_bar = st.progress(0, text="Initializing PII Redaction Engine...")
-        
-        # Initialize replacer with chosen seed & custom active pipeline
-        replacer = SyntheticReplacer(seed=int(faker_seed))
-        processor = DocxProcessor(pipeline, replacer)
-        
-        # Prepare output paths
-        output_dir = "output"
-        os.makedirs(output_dir, exist_ok=True)
-        output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
-        output_path = os.path.join(output_dir, output_filename)
+        with st.status("⏳ Processing Document — Please Wait...", expanded=True) as status_box:
+            st.write("🔍 **Step 1/3**: Initializing PII Redaction Engine & Faker synthetic generator...")
+            replacer = SyntheticReplacer(seed=int(faker_seed))
+            processor = DocxProcessor(pipeline, replacer)
+            
+            output_dir = "output"
+            os.makedirs(output_dir, exist_ok=True)
+            output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
+            output_path = os.path.join(output_dir, output_filename)
 
-        # 1. Perform Redaction (Extracts original PII inventory in the same pass)
-        progress_bar.progress(40, text="Scanning document & performing run-level PII redaction...")
-        redact_stats = processor.redact_document(input_path, output_path)
-        orig_inventory_set = processor.original_inventory_set
+            st.write("📝 **Step 2/3**: Scanning paragraphs, tables, headers, footers & replacing PII...")
+            redact_stats = processor.redact_document(input_path, output_path)
+            orig_inventory_set = processor.original_inventory_set
 
-        # 2. Perform Residual Audit & Known-Source Verification
-        progress_bar.progress(80, text="Executing 2-Layer Residual Audit & Known-Source Verification...")
-        detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
-        regression_results = run_known_source_regression_check(output_path)
-        regression_passed = all(r["passed"] for r in regression_results)
+            st.write("🛡️ **Step 3/3**: Running 2-Layer Residual Audit & Known-Source Verification...")
+            detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
+            regression_results = run_known_source_regression_check(output_path, pipeline=pipeline)
+            regression_passed = all(r["passed"] for r in regression_results)
 
-        progress_bar.progress(100, text="Redaction & Security Audit Complete!")
+            status_box.update(label="✅ Processing & Residual Audit Complete!", state="complete", expanded=False)
+
 
         # Store in Session State
         st.session_state.redact_stats = redact_stats
