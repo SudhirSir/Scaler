@@ -259,15 +259,8 @@ def run_detector_based_residual_audit(
     if not os.path.exists(redacted_docx_path):
         return audit_summary
 
-    # Build original text set (exact text of original PII items)
-    original_text_set = {item[1] for item in original_inventory_set if item[1]}
-    original_text_set.update({item[2] for item in original_inventory_set if len(item) > 2 and item[2]})
-
     # Build synthetic replacement lookup structures from current redaction run mapping cache
     synthetic_tuple_set = set()      # (label, norm_val)
-    synthetic_text_set = set()       # norm_val (label-agnostic exact text)
-    synthetic_all_strings = set()    # all normalized synthetic strings generated in this run
-    synthetic_tokens_set = set()     # individual clean words inside synthetic values
 
     if replacer and hasattr(replacer, 'mapping_cache'):
         for (orig_text, label), synth_val in replacer.mapping_cache.items():
@@ -276,18 +269,8 @@ def run_detector_based_residual_audit(
             
             if norm_synth:
                 synthetic_tuple_set.add((label, norm_synth))
-                synthetic_text_set.add(norm_synth)
-                synthetic_all_strings.add(norm_synth)
-                for tok in re.findall(r'\w+', norm_synth.lower()):
-                    if len(tok) >= 2:
-                        synthetic_tokens_set.add(tok)
             if raw_synth:
                 synthetic_tuple_set.add((label, raw_synth))
-                synthetic_text_set.add(raw_synth)
-                synthetic_all_strings.add(raw_synth)
-                for tok in re.findall(r'\w+', raw_synth.lower()):
-                    if len(tok) >= 2:
-                        synthetic_tokens_set.add(tok)
 
     doc = docx.Document(redacted_docx_path)
     elements = extract_all_document_elements(doc)
@@ -305,41 +288,25 @@ def run_detector_based_residual_audit(
             key = (label, norm_val)
             raw_key = (label, raw_val)
 
-            # 1. ORIGINAL_PII_LEAK: Whole-value match against original input document PII inventory
-            if (key in original_inventory_set or raw_key in original_inventory_set or
-                norm_val in original_text_set or raw_val in original_text_set):
-                audit_summary["original_pii_leaks"] += 1
+            is_synth = (
+                key in synthetic_tuple_set
+                or raw_key in synthetic_tuple_set
+            )
+
+            if key in original_inventory_set or raw_key in original_inventory_set:
                 classification = "ORIGINAL_PII_LEAK"
+                audit_summary["original_pii_leaks"] += 1
                 audit_summary["leaked_details"].append({
                     "type": label,
                     "text": span.text,
                     "location": elem["location"]
                 })
+            elif is_synth:
+                classification = "SYNTHETIC_REPLACEMENT"
+                audit_summary["synthetic_replacements"] += 1
             else:
-                span_tokens = set(re.findall(r'\w+', norm_val.lower()))
-                
-                is_synth = False
-                # Exact tuple key match
-                if key in synthetic_tuple_set or raw_key in synthetic_tuple_set:
-                    is_synth = True
-                # Label-agnostic exact text match
-                elif norm_val in synthetic_text_set or raw_val in synthetic_text_set:
-                    is_synth = True
-                # Full string containment match (span contains synthetic replacement string or vice versa)
-                elif any(s in norm_val for s in synthetic_all_strings if len(s) >= 3):
-                    is_synth = True
-                elif any(norm_val in s for s in synthetic_all_strings if len(norm_val) >= 3):
-                    is_synth = True
-                # Token overlap with synthetic values generated in this run
-                elif (span_tokens & synthetic_tokens_set):
-                    is_synth = True
-
-                if is_synth:
-                    audit_summary["synthetic_replacements"] += 1
-                    classification = "SYNTHETIC_REPLACEMENT"
-                else:
-                    audit_summary["new_or_unmatched_pii_like"] += 1
-                    classification = "NEW_OR_UNMATCHED_PII_LIKE"
+                classification = "NEW_OR_UNMATCHED_PII_LIKE"
+                audit_summary["new_or_unmatched_pii_like"] += 1
 
             audit_summary["detected_details"].append({
                 "type": label,

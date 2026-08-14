@@ -166,8 +166,8 @@ def get_cached_original_inventory(doc_path: str):
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.image("https://img.icons8.com/isometric-headers/100/security-shield.png", width=64)
-    st.title("PII Redactor Studio")
-    st.caption("Scaler AI Labs — Advanced PII Redaction")
+    st.title("Scaler AI PII Redaction Tool")
+    st.caption("Scaler AI Labs — Advanced PII Redaction Engine")
     st.markdown("---")
 
     # Document Selection Mode
@@ -232,7 +232,7 @@ with st.sidebar:
 # Header Banner
 st.markdown("""
 <div class="header-banner">
-    <div class="header-title">🛡️ Scaler AI Labs — PII Redaction Engine</div>
+    <div class="header-title">🛡️ Scaler AI PII Redaction Tool</div>
     <div class="header-subtitle">Enterprise-grade document sanitization, deterministic synthetic replacement, & multi-layered residual audit</div>
 </div>
 """, unsafe_allow_html=True)

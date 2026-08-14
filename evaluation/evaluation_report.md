@@ -89,11 +89,11 @@ This section presents the post-redaction validation results performed directly o
 | Classification Category | Span Count | Audit Definition & Status |
 | :--- | :---: | :--- |
 | **ORIGINAL_PII_LEAKS** | **0** | Spans matching original document PII values. **(MUST BE 0 FOR PASS)** |
-| **SYNTHETIC_REPLACEMENTS** | **1912** | Expected format-preserving synthetic replacements (Faker / cache). |
-| **NEW_OR_UNMATCHED_PII_LIKE** | **0** | PII-shaped spans not in original inventory and not in replacement cache. |
+| **SYNTHETIC_REPLACEMENTS** | **932** | Expected format-preserving synthetic replacements (Faker / cache). |
+| **NEW_OR_UNMATCHED_PII_LIKE** | **980** | PII-shaped spans not in original inventory and not in replacement cache. |
 | **TOTAL DETECTED SPANS ON REDACTED DOCX** | **1912** | Total PII-shaped detections on output document across all elements. |
 
-**Final Audit Decision**: **PASS (0 Original Real PII & 0 Unmatched Leaks)**
+**Final Audit Decision**: **FAIL / REVIEW REQUIRED**
 
 ---
 
