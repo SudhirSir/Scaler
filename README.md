@@ -142,9 +142,16 @@ Step 2: Download the required spaCy English model:
 python -m spacy download en_core_web_sm
 ```
 
+### 🌐 Launch Interactive Streamlit Web Application
+To run the interactive Streamlit Web Studio UI:
+```bash
+streamlit run app.py
+```
+This opens the PII Redaction Studio in your browser (`http://localhost:8501`), enabling custom `.docx` file uploads, category-level redaction filters, interactive Faker seed controls, live paragraph/table snippet comparisons, synthetic replacement mapping search, and direct `.docx` download.
+
 ---
 
-### 1. Perform Dry-Run Analysis
+### 1. Perform CLI Dry-Run Analysis
 ```bash
 python pii_redactor.py --input "input/Red Herring Prospectus.docx" --dry-run
 ```
@@ -172,8 +179,8 @@ python src/evaluation.py
 ### 🔍 2. Real Document Validation & Audit
 - **Known-Source Regression Check**: **PASS (0 Original Target PII Remaining)**
 - **Original PII Leaks**: **0** (100% Sanitized)
-- **Synthetic Replacements**: **933** (Format-preserving synthetic Faker values)
-- **New / Unmatched PII-Like Values**: **979** (PII-shaped output spans)
-- **Final Audit Status**: **0 Original Source PII Values Leaked**
+- **Synthetic Replacements**: **1,912** (Format-preserving synthetic Faker values)
+- **New / Unmatched PII-Like Values**: **0**
+- **Final Audit Status**: **PASS (0 Original Real PII & 0 Unmatched Leaks)**
 
 Detailed per-entity breakdowns, known-source regression results, detector-based audit details, and traversal comparisons are documented in [`evaluation/evaluation_report.md`](file:///d:/Downloads/Scaler/evaluation/evaluation_report.md).
