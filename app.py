@@ -90,13 +90,20 @@ st.markdown("""
     }
 
     /* Selected tags/chips in multiselect */
-    [data-testid="stSidebar"] [data-baseweb="tag"] {
+    [data-baseweb="tag"],
+    [data-testid="stSidebar"] [data-baseweb="tag"],
+    span[data-baseweb="tag"],
+    div[data-baseweb="tag"] {
         background-color: #4f46e5 !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
         border-radius: 6px !important;
+        border: none !important;
     }
+    [data-baseweb="tag"] *,
     [data-testid="stSidebar"] [data-baseweb="tag"] * {
         color: #ffffff !important;
     }
+
 
     /* Number input stepper buttons */
     [data-testid="stSidebar"] [data-testid="stNumberInput"] button,
@@ -348,26 +355,28 @@ if btn_redact:
     if not input_path or not os.path.exists(input_path):
         st.error("Please provide a valid DOCX document before executing.")
     else:
-        with st.status("⏳ Processing Document — Please Wait...", expanded=True) as status_box:
-            st.write("🔍 **Step 1/3**: Initializing PII Redaction Engine & Faker synthetic generator...")
-            replacer = SyntheticReplacer(seed=int(faker_seed))
-            processor = DocxProcessor(pipeline, replacer)
-            
-            output_dir = "output"
-            os.makedirs(output_dir, exist_ok=True)
-            output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
-            output_path = os.path.join(output_dir, output_filename)
+        with st.spinner("⏳ Redacting document & executing security audit... Please wait..."):
+            with st.status("🚀 Processing Document — Please Wait...", expanded=True) as status_box:
+                st.write("🔍 **Step 1/3**: Initializing PII Redaction Engine & Faker synthetic generator...")
+                replacer = SyntheticReplacer(seed=int(faker_seed))
+                processor = DocxProcessor(pipeline, replacer)
+                
+                output_dir = "output"
+                os.makedirs(output_dir, exist_ok=True)
+                output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
+                output_path = os.path.join(output_dir, output_filename)
 
-            st.write("📝 **Step 2/3**: Scanning paragraphs, tables, headers, footers & replacing PII...")
-            redact_stats = processor.redact_document(input_path, output_path)
-            orig_inventory_set = processor.original_inventory_set
+                st.write("📝 **Step 2/3**: Scanning paragraphs, tables, headers, footers & replacing PII...")
+                redact_stats = processor.redact_document(input_path, output_path)
+                orig_inventory_set = processor.original_inventory_set
 
-            st.write("🛡️ **Step 3/3**: Running 2-Layer Residual Audit & Known-Source Verification...")
-            detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
-            regression_results = run_known_source_regression_check(output_path, pipeline=pipeline)
-            regression_passed = all(r["passed"] for r in regression_results)
+                st.write("🛡️ **Step 3/3**: Running 2-Layer Residual Audit & Known-Source Verification...")
+                detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
+                regression_results = run_known_source_regression_check(output_path, pipeline=pipeline)
+                regression_passed = all(r["passed"] for r in regression_results)
 
-            status_box.update(label="✅ Processing & Residual Audit Complete!", state="complete", expanded=False)
+                status_box.update(label="✅ Processing & Residual Audit Complete!", state="complete", expanded=False)
+
 
 
         # Store in Session State

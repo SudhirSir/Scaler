@@ -177,6 +177,9 @@ class SpaCyDetector:
 
     def detect(self, text: str) -> List[PIISpan]:
         spans = []
+        if not text or len(text.strip()) < 3 or not any(c.isalpha() for c in text):
+            return spans
+
         
         # 1. Known Person Names (ALL CAPS & Title Case)
         for m in self.known_person_pattern.finditer(text):
