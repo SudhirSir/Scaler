@@ -40,11 +40,87 @@ st.markdown("""
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
-    /* Sidebar Customization */
-    section[data-testid="stSidebar"] {
-        background-color: #0d1322;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    /* ============================================================
+       SIDEBAR — COMPLETE DARK THEME FIX
+       ============================================================ */
+    [data-testid="stSidebar"] {
+        background-color: #0d1322 !important;
+        border-right: 1px solid rgba(255,255,255,0.08) !important;
     }
+
+    /* All text in sidebar → white */
+    [data-testid="stSidebar"] * {
+        color: #e2e8f0 !important;
+    }
+
+    /* Override white-background input boxes → dark */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border: 1px solid rgba(99,102,241,0.5) !important;
+        border-radius: 8px !important;
+    }
+
+    /* Multiselect & Selectbox container boxes */
+    [data-testid="stSidebar"] [data-baseweb="select"] > div,
+    [data-testid="stSidebar"] [data-baseweb="input"] > div,
+    [data-testid="stSidebar"] [data-baseweb="base-input"] {
+        background-color: #1e293b !important;
+        border: 1px solid rgba(99,102,241,0.5) !important;
+        color: #f1f5f9 !important;
+        border-radius: 8px !important;
+    }
+
+    /* Multiselect dropdown menu list */
+    [data-baseweb="menu"],
+    [data-baseweb="popover"] {
+        background-color: #1e293b !important;
+        border: 1px solid rgba(99,102,241,0.5) !important;
+    }
+    [data-baseweb="menu"] li,
+    [data-baseweb="menu"] li * {
+        color: #e2e8f0 !important;
+        background-color: #1e293b !important;
+    }
+    [data-baseweb="menu"] li:hover,
+    [data-baseweb="menu"] li:hover * {
+        background-color: #4f46e5 !important;
+        color: #ffffff !important;
+    }
+
+    /* Selected tags/chips in multiselect */
+    [data-testid="stSidebar"] [data-baseweb="tag"] {
+        background-color: #4f46e5 !important;
+        border-radius: 6px !important;
+    }
+    [data-testid="stSidebar"] [data-baseweb="tag"] * {
+        color: #ffffff !important;
+    }
+
+    /* Number input stepper buttons */
+    [data-testid="stSidebar"] [data-testid="stNumberInput"] button,
+    [data-testid="stSidebar"] button:not([kind="primary"]):not([kind="secondary"]) {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+        border-color: rgba(99,102,241,0.4) !important;
+    }
+
+    /* File uploader drag-drop box */
+    [data-testid="stSidebar"] [data-testid="stFileUploadDropzone"],
+    [data-testid="stSidebar"] [data-testid="stFileUploadDropzone"] * {
+        background-color: #1e293b !important;
+        border: 1px dashed rgba(99,102,241,0.6) !important;
+        color: #cbd5e1 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Dividers */
+    [data-testid="stSidebar"] hr {
+        border-color: rgba(255,255,255,0.12) !important;
+    }
+    /* ============================================================ */
+
     
     /* Header Banner */
     .header-banner {
