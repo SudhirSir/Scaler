@@ -10,12 +10,27 @@ from typing import Dict, List, Set, Tuple
 from detectors import PIIDetectorPipeline, PIISpan
 from replacement import SyntheticReplacer
 
+def normalize_val(val: str, label: str) -> str:
+    v = val.strip().lower()
+    if label == "PHONE_NUMBER":
+        digits = "".join([c for c in v if c.isdigit()])
+        return digits[-10:] if len(digits) >= 10 else digits
+    elif label == "EMAIL":
+        return v
+    elif label in ("CREDIT_CARD", "SSN", "PAN", "CIN", "IP_ADDRESS"):
+        return "".join([c for c in v if c.isalnum()])
+    elif label in ("PERSON", "ORGANIZATION", "ADDRESS"):
+        words = v.split()
+        return " ".join(words)
+    return v
+
 class DocxProcessor:
     """Safely processes and redacts Microsoft Word (.docx) documents with run-level style preservation."""
 
     def __init__(self, pipeline: PIIDetectorPipeline, replacer: SyntheticReplacer):
         self.pipeline = pipeline
         self.replacer = replacer
+        self.original_inventory_set = set()
 
     def _redact_paragraph_runs(self, paragraph: docx.text.paragraph.Paragraph) -> List[PIISpan]:
         """
@@ -75,10 +90,16 @@ class DocxProcessor:
         if not resolved_spans:
             return []
 
-        # Pre-calculate synthetic replacements for resolved spans
+        # Pre-calculate synthetic replacements for resolved spans and store original inventory keys
         span_replacements = {}
         for s in resolved_spans:
             span_replacements[(s.start, s.end)] = self.replacer.get_replacement(s.text, s.label)
+            norm_v = normalize_val(s.text, s.label)
+            raw_v = s.text.strip().lower()
+            if norm_v:
+                self.original_inventory_set.add((s.label, norm_v))
+            if raw_v:
+                self.original_inventory_set.add((s.label, raw_v))
 
         def get_span_at(idx: int):
             for s in resolved_spans:
@@ -106,6 +127,7 @@ class DocxProcessor:
     def redact_document(self, input_path: str, output_path: str) -> Dict:
         print(f"Reading document: {input_path}", flush=True)
         doc = docx.Document(input_path)
+        self.original_inventory_set = set()
 
         stats = {
             "paragraphs_processed": 0,

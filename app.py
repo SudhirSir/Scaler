@@ -31,113 +31,139 @@ st.set_page_config(
 # Premium Dark Mode / Glassmorphism Design System
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
     /* Global Page Styling */
     .main {
         background-color: #0b0f19;
         color: #f1f5f9;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
+
+    /* Sidebar Customization */
+    section[data-testid="stSidebar"] {
+        background-color: #0d1322;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
     
     /* Header Banner */
     .header-banner {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 24px 32px;
-        margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e293b 100%);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 20px;
+        padding: 28px 36px;
+        margin-bottom: 28px;
+        box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.2), 0 10px 15px -5px rgba(0, 0, 0, 0.5);
     }
     
     .header-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(90deg, #60a5fa, #c084fc, #f472b6);
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #818cf8 0%, #c084fc 50%, #38bdf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0 0 8px 0;
     }
     
     .header-subtitle {
-        color: #94a3b8;
-        font-size: 1.05rem;
+        color: #cbd5e1;
+        font-size: 1.1rem;
+        font-weight: 400;
         margin: 0;
     }
     
     /* Glassmorphic Metric Cards */
     .metric-card {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 20px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
         text-align: center;
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .metric-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(96, 165, 250, 0.4);
+        transform: translateY(-4px);
+        border-color: rgba(129, 140, 248, 0.6);
+        box-shadow: 0 12px 28px rgba(99, 102, 241, 0.25);
     }
     
     .metric-value {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 800;
-        color: #38bdf8;
-        margin-bottom: 4px;
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
     }
     
     .metric-label {
         font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
         color: #94a3b8;
-        font-weight: 600;
+        font-weight: 700;
     }
 
-    /* Badges */
+    /* Status Pill Badges */
     .status-badge-pass {
-        background-color: rgba(34, 197, 94, 0.15);
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%);
         color: #4ade80;
-        border: 1px solid rgba(34, 197, 94, 0.4);
-        padding: 4px 12px;
-        border-radius: 20px;
+        border: 1px solid rgba(34, 197, 94, 0.5);
+        padding: 6px 16px;
+        border-radius: 30px;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         display: inline-block;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
     }
     .status-badge-fail {
-        background-color: rgba(239, 68, 68, 0.15);
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(225, 29, 72, 0.2) 100%);
         color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        padding: 4px 12px;
-        border-radius: 20px;
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        padding: 6px 16px;
+        border-radius: 30px;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         display: inline-block;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
     }
 
     /* Tabs Customization */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 10px;
         background-color: #0f172a;
-        padding: 6px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 8px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 44px;
-        border-radius: 8px;
+        height: 48px;
+        border-radius: 10px;
         color: #94a3b8;
         font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
         color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
     }
 
-    /* DataFrame & Table styling */
+    /* Buttons */
+    .stButton>button {
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        height: 48px;
+        transition: all 0.2s ease;
+    }
     .stDataFrame {
         border-radius: 12px;
         overflow: hidden;
@@ -258,13 +284,13 @@ if btn_redact:
         output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
         output_path = os.path.join(output_dir, output_filename)
 
-        # 1. Perform Redaction
-        progress_bar.progress(30, text="Scanning document & performing run-level PII redaction...")
+        # 1. Perform Redaction (Extracts original PII inventory in the same pass)
+        progress_bar.progress(40, text="Scanning document & performing run-level PII redaction...")
         redact_stats = processor.redact_document(input_path, output_path)
+        orig_inventory_set = processor.original_inventory_set
 
-        # 2. Perform Original PII Inventory & Residual Audit
-        progress_bar.progress(70, text="Executing 2-Layer Residual Audit & Known-Source Verification...")
-        orig_inventory_set, orig_counts, total_orig = get_cached_original_inventory(input_path)
+        # 2. Perform Residual Audit & Known-Source Verification
+        progress_bar.progress(80, text="Executing 2-Layer Residual Audit & Known-Source Verification...")
         detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
         regression_results = run_known_source_regression_check(output_path)
         regression_passed = all(r["passed"] for r in regression_results)
