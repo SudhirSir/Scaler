@@ -162,12 +162,11 @@ class SpaCyDetector:
     def __init__(self, model_name: str = "en_core_web_sm"):
         try:
             self.nlp = spacy.load(model_name, disable=["parser", "attribute_ruler", "lemmatizer"])
-        except Exception as e:
-            raise RuntimeError(
-                f"\n\n[ERROR] spaCy language model '{model_name}' is required but not installed.\n"
-                f"Please run the following command to download the model:\n\n"
-                f"    python -m spacy download {model_name}\n\n"
-            ) from e
+        except Exception:
+            # Auto-download spaCy model if missing (essential for Cloud deployments like Streamlit Community Cloud)
+            import spacy.cli
+            spacy.cli.download(model_name)
+            self.nlp = spacy.load(model_name, disable=["parser", "attribute_ruler", "lemmatizer"])
 
         self.corp_suffix = re.compile(r'\b[A-Z0-9\s.,&-]{3,50}\s+(?:LIMITED|PVT LTD|PRIVATE LIMITED|CORPORATION|CORP|INC|LLP|FAMILY TRUST|TRUST)\b', re.IGNORECASE)
         self.known_person_pattern = re.compile(
