@@ -156,6 +156,11 @@ def load_detector_pipeline():
 
 pipeline = load_detector_pipeline()
 
+@st.cache_data
+def get_cached_original_inventory(doc_path: str):
+    """Caches original document PII inventory extraction for high-performance execution."""
+    return build_original_pii_inventory(doc_path, pipeline)
+
 # -----------------------------------------------------------------------------
 # 3. SIDEBAR CONTROLS & CONFIGURATION
 # -----------------------------------------------------------------------------
@@ -241,37 +246,42 @@ if btn_redact:
     if not input_path or not os.path.exists(input_path):
         st.error("Please provide a valid DOCX document before executing.")
     else:
-        with st.spinner("Processing document paragraphs, tables, headers, footers & performing multi-layered residual audit..."):
-            # Initialize replacer with chosen seed & custom active pipeline
-            replacer = SyntheticReplacer(seed=int(faker_seed))
-            processor = DocxProcessor(pipeline, replacer)
-            
-            # Prepare output paths
-            output_dir = "output"
-            os.makedirs(output_dir, exist_ok=True)
-            output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
-            output_path = os.path.join(output_dir, output_filename)
+        progress_bar = st.progress(0, text="Initializing PII Redaction Engine...")
+        
+        # Initialize replacer with chosen seed & custom active pipeline
+        replacer = SyntheticReplacer(seed=int(faker_seed))
+        processor = DocxProcessor(pipeline, replacer)
+        
+        # Prepare output paths
+        output_dir = "output"
+        os.makedirs(output_dir, exist_ok=True)
+        output_filename = f"Redacted_{os.path.splitext(input_filename)[0]}.docx"
+        output_path = os.path.join(output_dir, output_filename)
 
-            # Perform Redaction
-            redact_stats = processor.redact_document(input_path, output_path)
+        # 1. Perform Redaction
+        progress_bar.progress(30, text="Scanning document & performing run-level PII redaction...")
+        redact_stats = processor.redact_document(input_path, output_path)
 
-            # Perform Original PII Inventory & Residual Audit
-            orig_inventory_set, orig_counts, total_orig = build_original_pii_inventory(input_path, pipeline)
-            detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
-            regression_results = run_known_source_regression_check(output_path)
-            regression_passed = all(r["passed"] for r in regression_results)
+        # 2. Perform Original PII Inventory & Residual Audit
+        progress_bar.progress(70, text="Executing 2-Layer Residual Audit & Known-Source Verification...")
+        orig_inventory_set, orig_counts, total_orig = get_cached_original_inventory(input_path)
+        detector_audit = run_detector_based_residual_audit(output_path, pipeline, orig_inventory_set, replacer)
+        regression_results = run_known_source_regression_check(output_path)
+        regression_passed = all(r["passed"] for r in regression_results)
 
-            # Store in Session State
-            st.session_state.redact_stats = redact_stats
-            st.session_state.detector_audit = detector_audit
-            st.session_state.regression_results = regression_results
-            st.session_state.regression_passed = regression_passed
-            st.session_state.orig_inventory_set = orig_inventory_set
-            st.session_state.mapping_cache = replacer.mapping_cache
-            st.session_state.output_path = output_path
-            st.session_state.output_filename = output_filename
-            st.session_state.input_path = input_path
-            st.session_state.redaction_complete = True
+        progress_bar.progress(100, text="Redaction & Security Audit Complete!")
+
+        # Store in Session State
+        st.session_state.redact_stats = redact_stats
+        st.session_state.detector_audit = detector_audit
+        st.session_state.regression_results = regression_results
+        st.session_state.regression_passed = regression_passed
+        st.session_state.orig_inventory_set = orig_inventory_set
+        st.session_state.mapping_cache = replacer.mapping_cache
+        st.session_state.output_path = output_path
+        st.session_state.output_filename = output_filename
+        st.session_state.input_path = input_path
+        st.session_state.redaction_complete = True
 
         st.toast("PII Redaction & Residual Audit Successfully Completed!", icon="✅")
 

@@ -161,7 +161,7 @@ class SpaCyDetector:
 
     def __init__(self, model_name: str = "en_core_web_sm"):
         try:
-            self.nlp = spacy.load(model_name)
+            self.nlp = spacy.load(model_name, disable=["parser", "attribute_ruler", "lemmatizer"])
         except Exception as e:
             raise RuntimeError(
                 f"\n\n[ERROR] spaCy language model '{model_name}' is required but not installed.\n"
