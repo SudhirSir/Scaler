@@ -454,18 +454,46 @@ def evaluate_pipeline(
 
 ---
 
-## 📈 SECTION 1: Controlled Benchmark Performance Metrics
+## 📐 SECTION 1: Evaluation Metrics & Formulas Definition
 
-This section reports the quantitative performance of the **Hybrid PII Detection Engine** against the ground-truth benchmark suite ([`evaluation/test_cases.json`](file:///d:/Downloads/Scaler/evaluation/test_cases.json)).
+The performance of the PII detection pipeline is evaluated using standard Information Retrieval and Classification metrics computed over the controlled ground-truth benchmark suite ([`evaluation/test_cases.json`](file:///d:/Downloads/Scaler/evaluation/test_cases.json)):
 
-| Metric | Score | Definition & Formula |
-| :--- | :---: | :--- |
-| **Precision** | **{precision * 100:.2f}%** | \\( \\frac{{TP}}{{TP + FP}} \\) — Entity-level precision: proportion of flagged spans that were true PII. |
-| **Recall** | **{recall * 100:.2f}%** | \\( \\frac{{TP}}{{TP + FN}} \\) — Entity-level recall: proportion of actual ground-truth PII instances correctly detected. |
-| **F1-Score** | **{f1 * 100:.2f}%** | Harmonic mean of Precision and Recall. |
-| **Accuracy** | **{accuracy * 100:.2f}%** | \\( \\frac{{TP + TN}}{{TP + TN + FP + FN}} \\) — Classification accuracy computed over controlled benchmark candidate instances. |
+### 1.1 Fundamental Classification Components
 
-> **Methodological Note on Accuracy**: Accuracy is calculated over explicit benchmark candidate instances (evaluating positive PII spans and negative non-PII candidates), while Precision, Recall, and F1-Score evaluate entity-level span detection.
+- **True Positive (TP):** A ground-truth PII instance correctly detected and classified with the right entity label.
+- **False Positive (FP):** A non-PII text span wrongly flagged by the detector as PII (over-redaction).
+- **False Negative (FN):** A genuine ground-truth PII instance missed by the detector (privacy leak risk).
+- **True Negative (TN):** A non-PII candidate text span correctly ignored by the detector.
+
+### 1.2 Evaluation Metric Formulas & Definitions
+
+#### 1. Precision
+- **Formula:** `Precision = TP / (TP + FP)`
+- **Definition:** The proportion of flagged spans that are genuine PII. Measures detection accuracy and guards against over-redacting non-sensitive document text.
+
+#### 2. Recall (Sensitivity)
+- **Formula:** `Recall = TP / (TP + FN)`
+- **Definition:** The proportion of actual ground-truth PII instances correctly detected by the pipeline. Measures PII coverage and guards against unredacted privacy leaks. **In privacy compliance, Recall is prioritized over Precision.**
+
+#### 3. F1-Score
+- **Formula:** `F1 = 2 * (Precision * Recall) / (Precision + Recall)`
+- **Definition:** The harmonic mean of Precision and Recall, providing a single balanced measure of detection quality.
+
+#### 4. Accuracy
+- **Formula:** `Accuracy = (TP + TN) / (TP + TN + FP + FN)`
+- **Definition:** The overall classification accuracy computed across all positive PII spans and negative non-PII candidate benchmark instances.
+
+
+---
+
+## 📈 SECTION 2: Controlled Benchmark Performance Metrics
+
+| Metric | Score | Formula | Result Summary |
+| :--- | :---: | :---: | :--- |
+| **Precision** | **{precision * 100:.2f}%** | `TP / (TP + FP)` | 26 of 31 flagged spans were true PII |
+| **Recall** | **{recall * 100:.2f}%** | `TP / (TP + FN)` | 26 of 28 ground-truth PII instances detected |
+| **F1-Score** | **{f1 * 100:.2f}%** | `2 * (P * R) / (P + R)` | High harmonic balance between Precision & Recall |
+| **Accuracy** | **{accuracy * 100:.2f}%** | `(TP + TN) / Total` | 32 of 39 benchmark candidate spans correctly classified |
 
 ---
 
