@@ -1,0 +1,161 @@
+[
+  {
+    "id": 1,
+    "category": "PERSON & EMAIL & PHONE",
+    "text": "Rashi Patil: John Doe, rashhi.patil@gmail.com: john.doe@example.com, +91 9876543210: +91 1234567645",
+    "candidates": [
+      {"text": "Rashi Patil", "label": "PERSON"},
+      {"text": "John Doe", "label": "PERSON"},
+      {"text": "rashhi.patil@gmail.com", "label": "EMAIL"},
+      {"text": "john.doe@example.com", "label": "EMAIL"},
+      {"text": "+91 9876543210", "label": "PHONE_NUMBER"}
+    ],
+    "ground_truth": [
+      {"text": "Rashi Patil", "label": "PERSON"},
+      {"text": "John Doe", "label": "PERSON"},
+      {"text": "rashhi.patil@gmail.com", "label": "EMAIL"},
+      {"text": "john.doe@example.com", "label": "EMAIL"},
+      {"text": "+91 9876543210", "label": "PHONE_NUMBER"}
+    ]
+  },
+  {
+    "id": 2,
+    "category": "PERSON & EMAIL & PHONE",
+    "text": "Contact Rohan Dey at rohan.dey@gmail.com or peter.parker@example.com, phone +91 1234567645",
+    "candidates": [
+      {"text": "Rohan Dey", "label": "PERSON"},
+      {"text": "rohan.dey@gmail.com", "label": "EMAIL"},
+      {"text": "peter.parker@example.com", "label": "EMAIL"},
+      {"text": "+91 1234567645", "label": "PHONE_NUMBER"}
+    ],
+    "ground_truth": [
+      {"text": "Rohan Dey", "label": "PERSON"},
+      {"text": "rohan.dey@gmail.com", "label": "EMAIL"},
+      {"text": "peter.parker@example.com", "label": "EMAIL"},
+      {"text": "+91 1234567645", "label": "PHONE_NUMBER"}
+    ]
+  },
+  {
+    "id": 3,
+    "category": "ORGANIZATION & CIN & ADDRESS",
+    "text": "KSH INTERNATIONAL LIMITED Corporate Identity Number: U28129PN1979PLC141032 Registered Office: Plot No 12, Industrial Area, Pune 411001",
+    "candidates": [
+      {"text": "KSH INTERNATIONAL LIMITED", "label": "ORGANIZATION"},
+      {"text": "U28129PN1979PLC141032", "label": "CIN"},
+      {"text": "Plot No 12, Industrial Area, Pune 411001", "label": "ADDRESS"}
+    ],
+    "ground_truth": [
+      {"text": "KSH INTERNATIONAL LIMITED", "label": "ORGANIZATION"},
+      {"text": "U28129PN1979PLC141032", "label": "CIN"},
+      {"text": "Plot No 12, Industrial Area, Pune 411001", "label": "ADDRESS"}
+    ]
+  },
+  {
+    "id": 4,
+    "category": "PERSON & DOB & ADDRESS & SSN",
+    "text": "Director John Smith (DIN: 01234567) Date of Birth: January 15, 1980 resides at Door No 45, Park Avenue, New York 10001. SSN: 123-45-6789.",
+    "candidates": [
+      {"text": "John Smith", "label": "PERSON"},
+      {"text": "January 15, 1980", "label": "DATE_OF_BIRTH"},
+      {"text": "Door No 45, Park Avenue, New York 10001", "label": "ADDRESS"},
+      {"text": "123-45-6789", "label": "SSN"}
+    ],
+    "ground_truth": [
+      {"text": "John Smith", "label": "PERSON"},
+      {"text": "January 15, 1980", "label": "DATE_OF_BIRTH"},
+      {"text": "Door No 45, Park Avenue, New York 10001", "label": "ADDRESS"},
+      {"text": "123-45-6789", "label": "SSN"}
+    ]
+  },
+  {
+    "id": 5,
+    "category": "CREDIT_CARD & IP_ADDRESS & PAN",
+    "text": "Payment made using credit card 4012-8888-8888-1881 from IP address 192.168.1.100. Customer PAN: ABCDE1234F.",
+    "candidates": [
+      {"text": "4012-8888-8888-1881", "label": "CREDIT_CARD"},
+      {"text": "192.168.1.100", "label": "IP_ADDRESS"},
+      {"text": "ABCDE1234F", "label": "PAN"}
+    ],
+    "ground_truth": [
+      {"text": "4012-8888-8888-1881", "label": "CREDIT_CARD"},
+      {"text": "192.168.1.100", "label": "IP_ADDRESS"},
+      {"text": "ABCDE1234F", "label": "PAN"}
+    ]
+  },
+  {
+    "id": 6,
+    "category": "MULTIPLE ADJACENT PHONE NUMBERS",
+    "text": "For queries contact +91 22 30752929, +91 22 30752928, or +91 22 30752914 immediately.",
+    "candidates": [
+      {"text": "+91 22 30752929", "label": "PHONE_NUMBER"},
+      {"text": "+91 22 30752928", "label": "PHONE_NUMBER"},
+      {"text": "+91 22 30752914", "label": "PHONE_NUMBER"}
+    ],
+    "ground_truth": [
+      {"text": "+91 22 30752929", "label": "PHONE_NUMBER"},
+      {"text": "+91 22 30752928", "label": "PHONE_NUMBER"},
+      {"text": "+91 22 30752914", "label": "PHONE_NUMBER"}
+    ]
+  },
+  {
+    "id": 7,
+    "category": "CONTEXTUAL PERSON ROLE NAMES",
+    "text": "Contact Person: Prakash Boricha, Managing Director: Hitesh Ramani, Company Secretary: Chitra Raste.",
+    "candidates": [
+      {"text": "Prakash Boricha", "label": "PERSON"},
+      {"text": "Hitesh Ramani", "label": "PERSON"},
+      {"text": "Chitra Raste", "label": "PERSON"}
+    ],
+    "ground_truth": [
+      {"text": "Prakash Boricha", "label": "PERSON"},
+      {"text": "Hitesh Ramani", "label": "PERSON"},
+      {"text": "Chitra Raste", "label": "PERSON"}
+    ]
+  },
+  {
+    "id": 8,
+    "category": "REALISTIC INDIAN ADDRESS FORMATS",
+    "text": "Registered Office: Gat No. 11/3, Village Birdewadi, Taluka Khed, District Pune – 410 501, Maharashtra, India",
+    "candidates": [
+      {"text": "Gat No. 11/3, Village Birdewadi, Taluka Khed, District Pune – 410 501, Maharashtra, India", "label": "ADDRESS"}
+    ],
+    "ground_truth": [
+      {"text": "Gat No. 11/3, Village Birdewadi, Taluka Khed, District Pune – 410 501, Maharashtra, India", "label": "ADDRESS"}
+    ]
+  },
+  {
+    "id": 9,
+    "category": "NEGATIVE NON-PII BENCHMARK CANDIDATES",
+    "text": "Please read section 32 of the Companies Act, 2013 and SEBI ICDR Regulations for Offer Closing at 5:00 p.m. on 10 December 2025.",
+    "candidates": [
+      {"text": "Companies Act", "label": "NON_PII"},
+      {"text": "10 December 2025", "label": "NON_PII"},
+      {"text": "SEBI ICDR Regulations", "label": "NON_PII"}
+    ],
+    "ground_truth": []
+  },
+  {
+    "id": 10,
+    "category": "EDGE CASES: LUHN INVALID CARD & INVALID IP",
+    "text": "Invalid card 1234-5678-9012-3456 and invalid IP address 999.999.999.999 reported by Registrar.",
+    "candidates": [
+      {"text": "1234-5678-9012-3456", "label": "NON_PII"},
+      {"text": "999.999.999.999", "label": "NON_PII"},
+      {"text": "Registrar", "label": "NON_PII"}
+    ],
+    "ground_truth": []
+  },
+  {
+    "id": 11,
+    "category": "PROPOSED PROMOTERS (ALL CAPS)",
+    "text": "OUR PROMOTERS: RAJESH KUSHAL HEGDE AND SARTHAK MALVADKAR",
+    "candidates": [
+      {"text": "RAJESH KUSHAL HEGDE", "label": "PERSON"},
+      {"text": "SARTHAK MALVADKAR", "label": "PERSON"}
+    ],
+    "ground_truth": [
+      {"text": "RAJESH KUSHAL HEGDE", "label": "PERSON"},
+      {"text": "SARTHAK MALVADKAR", "label": "PERSON"}
+    ]
+  }
+]
