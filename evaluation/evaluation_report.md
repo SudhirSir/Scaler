@@ -82,14 +82,14 @@ This section presents the post-redaction validation results performed directly o
 
 ### Layer 2: Original Document PII Inventory & Whole-Value Normalized Residual Audit
 
-**Purpose**: Uses the original PII inventory built during the redaction pass (920 unique normalized keys), then re-runs `PIIDetectorPipeline` across all body paragraphs, tables, headers, and footers of `output/Red_Herring_Prospectus_Redacted.docx`. Every detected span is classified using **exact** `(label, normalized_value)` tuple lookup against the original inventory and synthetic replacement cache. No fuzzy, substring, or token-overlap matching is used.
+**Purpose**: Uses the original PII inventory built during the redaction pass (919 unique normalized keys), then re-runs `PIIDetectorPipeline` across all body paragraphs, tables, headers, and footers of `output/Red_Herring_Prospectus_Redacted.docx`. Every detected span is classified using **exact** `(label, normalized_value)` tuple lookup against the original inventory and synthetic replacement cache. No fuzzy, substring, or token-overlap matching is used.
 
 | Classification Category | Span Count | Definition |
 | :--- | :---: | :--- |
 | **ORIGINAL_PII_LEAK** | **0** | Exact match against original document PII inventory. **MUST BE 0 — security critical.** |
-| **SYNTHETIC_REPLACEMENT** | **1689** | Exact match against Faker replacement cache. Expected — format-preserving synthetic values. |
-| **NEW_OR_UNMATCHED_PII_LIKE** | **223** | PII-shaped detector hits not in either set. Confirmed document boilerplate / detector false positives. Not original PII. |
-| **TOTAL SCANNED** | **1912** | All PII-shaped detections on redacted output across all paragraphs, tables, headers, footers. |
+| **SYNTHETIC_REPLACEMENT** | **931** | Exact match against Faker replacement cache. Expected — format-preserving synthetic values. |
+| **NEW_OR_UNMATCHED_PII_LIKE** | **980** | PII-like detector hits not matching the original inventory or synthetic replacement cache; these may represent detector false positives or document boilerplate and are flagged for review. |
+| **TOTAL SCANNED** | **1911** | All PII-shaped detections on redacted output across all paragraphs, tables, headers, footers. |
 
 **Final Audit Decision**: **✅ PASS — 0 Original PII Leaks Confirmed**
 

@@ -271,17 +271,7 @@ def run_detector_based_residual_audit(
             norm_synth = normalize_pii_value(synth_val, label)
             if norm_synth:
                 synthetic_tuple_set.add((label, norm_synth))
-            # For PERSON and ORGANIZATION, spaCy may detect individual name tokens
-            # (e.g. "Becker" from the synthetic full name "Amanda Becker").
-            # Add every individual word-token so these sub-span detections are
-            # correctly classified as SYNTHETIC_REPLACEMENT, not unmatched.
-            if label in ("PERSON", "ORGANIZATION"):
-                for token in synth_val.split():
-                    tok_norm = token.strip(".,;:()'\"-").lower()
-                    if tok_norm and len(tok_norm) > 2:
-                        synthetic_tuple_set.add((label, tok_norm))
-                        synthetic_tuple_set.add(("PERSON", tok_norm))
-                        synthetic_tuple_set.add(("ORGANIZATION", tok_norm))
+
 
     doc = docx.Document(redacted_docx_path)
     elements = extract_all_document_elements(doc)
@@ -536,7 +526,7 @@ This section presents the post-redaction validation results performed directly o
 | :--- | :---: | :--- |
 | **ORIGINAL_PII_LEAK** | **{detector_audit['original_pii_leaks']}** | Exact match against original document PII inventory. **MUST BE 0 — security critical.** |
 | **SYNTHETIC_REPLACEMENT** | **{detector_audit['synthetic_replacements']}** | Exact match against Faker replacement cache. Expected — format-preserving synthetic values. |
-| **NEW_OR_UNMATCHED_PII_LIKE** | **{detector_audit['new_or_unmatched_pii_like']}** | PII-shaped detector hits not in either set. Confirmed document boilerplate / detector false positives. Not original PII. |
+| **NEW_OR_UNMATCHED_PII_LIKE** | **{detector_audit['new_or_unmatched_pii_like']}** | PII-like detector hits not matching the original inventory or synthetic replacement cache; these may represent detector false positives or document boilerplate and are flagged for review. |
 | **TOTAL SCANNED** | **{detector_audit['total_detected_spans']}** | All PII-shaped detections on redacted output across all paragraphs, tables, headers, footers. |
 
 **Final Audit Decision**: **{'✅ PASS — 0 Original PII Leaks Confirmed' if (residual_passed and regression_passed) else '❌ FAIL — Original PII Found in Output'}**
